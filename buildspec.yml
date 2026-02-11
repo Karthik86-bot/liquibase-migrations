@@ -6,11 +6,8 @@ phases:
       java: corretto17
     commands:
       - echo Installing Liquibase
-
-      - curl -L https://github.com/liquibase/liquibase/releases/download/v4.25.1/liquibase-4.25.1.tar.gz -o liquibase.tar.gz
-
       - rm -rf liquibase liquibase-*
-
+      - curl -L https://github.com/liquibase/liquibase/releases/download/v4.25.1/liquibase-4.25.1.tar.gz -o liquibase.tar.gz
       - tar -xzf liquibase.tar.gz
 
       # Find extracted directory automatically
