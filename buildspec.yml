@@ -2,40 +2,48 @@ version: 0.2
 
 phases:
   install:
-    runtime-versions:
-      java: corretto17
-    commands:
-      - echo Installing Liquibase
+  runtime-versions:
+    java: corretto17
 
-      # Clean old files
-      - rm -rf /opt/liquibase liquibase* liquibase.tar.gz lib sdk internal
+  commands:
+    - echo "Installing Liquibase"
 
-      # Download
-      - curl -L https://github.com/liquibase/liquibase/releases/download/v4.25.1/liquibase-4.25.1.tar.gz -o liquibase.tar.gz
+    # Cleanup
+    - rm -rf /opt/liquibase /tmp/liquibase liquibase.tar.gz
 
-      # Extract
-      - tar -xzf liquibase.tar.gz
+    # Temp folder
+    - mkdir -p /tmp/liquibase
+    - cd /tmp/liquibase
 
-      # Debug (optional)
-      - ls -l
+    # Download
+    - curl -L https://github.com/liquibase/liquibase/releases/download/v4.25.1/liquibase-4.25.1.tar.gz -o liquibase.tar.gz
 
-      # Create target dir
-      - mkdir -p /opt/liquibase
+    # Extract
+    - tar -xzf liquibase.tar.gz
 
-      # Move extracted files (all Liquibase files)
-      - mv liquibase lib sdk internal /opt/liquibase/
+    # Debug
+    - echo "Files after extract:"
+    - ls -l
 
-      # Make executable
-      - chmod +x /opt/liquibase/liquibase
+    # Install
+    - mkdir -p /opt/liquibase
+    - cp -r ./* /opt/liquibase/
 
-      # Add to PATH
-      - ln -sf /opt/liquibase/liquibase /usr/local/bin/liquibase
+    # Permissions
+    - chmod +x /opt/liquibase/liquibase
 
-      # Install jq
-      - yum install -y jq
+    # PATH
+    - ln -sf /opt/liquibase/liquibase /usr/local/bin/liquibase
 
-      # Verify install
-      - liquibase --version
+    # Back
+    - cd $CODEBUILD_SRC_DIR
+
+    # Tools
+    - yum install -y jq
+
+    # Verify
+    - liquibase --version
+
 
 
   pre_build:
