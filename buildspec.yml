@@ -15,6 +15,7 @@ phases:
 
       # Extract
       - tar -xzf liquibase.tar.gz
+      - ls -l
 
       # Find extracted folder
       - LIQUIBASE_DIR=$(ls -d liquibase-* | head -n 1)
