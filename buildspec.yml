@@ -1,7 +1,12 @@
 version: 0.2
 
 phases:
-  install:
+    install:
+    commands:
+      - curl -L https://github.com/liquibase/liquibase/releases/download/v4.25.1/liquibase-4.25.1.tar.gz -o liquibase.tar.gz
+      - tar -xzf liquibase.tar.gz
+      - mv liquibase /usr/local/bin/
+
     runtime-versions:
       java: corretto17
     commands:
