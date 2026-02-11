@@ -5,19 +5,33 @@ phases:
     runtime-versions:
       java: corretto17
     commands:
-      - echo "Installing Liquibase"
-      - curl -L https://github.com/liquibase/liquibase/releases/download/v4.25.1/liquibase-4.25.1.zip -o liquibase.zip
-      - unzip liquibase.zip -d liquibase
-      - curl -L https://jdbc.postgresql.org/download/postgresql-42.7.3.jar -o liquibase/lib/postgresql.jar
-      - export PATH=$PATH:$(pwd)/liquibase
+      - yum install -y jq
+
+  pre_build:
+    commands:
+      - echo "Fetching DB credentials..."
+      - |
+        SECRET=$(aws secretsmanager get-secret-value \
+          --region eu-north-1 \
+          --secret-id prod/appbeta/rds/mysql \
+          --query SecretString \
+          --output text)
+
+      - export DB_USER=$(echo $SECRET | jq -r .username)
+      - export DB_PASS=$(echo $SECRET | jq -r .password)
+      - export DB_HOST=$(echo $SECRET | jq -r .host)
+      - export DB_PORT=$(echo $SECRET | jq -r .port)
+
+      - echo "DB Host: $DB_HOST"
+      - echo "DB Port: $DB_PORT"
 
   build:
     commands:
-      - echo "Running Liquibase update"
+      - echo "Running Liquibase..."
       - |
         liquibase \
-          --url=jdbc:postgresql://$DB_HOST:$DB_PORT/$DB_NAME \
-          --username=$DB_USERNAME \
-          --password=$DB_PASSWORD \
-          --changeLogFile=liquibase/changelog/master.xml \
+          --url="jdbc:postgresql://$DB_HOST:$DB_PORT/postgres" \
+          --username="$DB_USER" \
+          --password="$DB_PASS" \
+          --changeLogFile=db/changelog/db.changelog-master.xml \
           update
