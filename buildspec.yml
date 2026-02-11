@@ -7,21 +7,23 @@ phases:
     commands:
       - echo Installing Liquibase
 
-      # Clean old install
-      - rm -rf /opt/liquibase liquibase*
+      # Clean old files
+      - rm -rf /opt/liquibase liquibase* liquibase.tar.gz lib sdk internal
 
       # Download
       - curl -L https://github.com/liquibase/liquibase/releases/download/v4.25.1/liquibase-4.25.1.tar.gz -o liquibase.tar.gz
 
       # Extract
       - tar -xzf liquibase.tar.gz
+
+      # Debug (optional)
       - ls -l
 
-      # Find extracted folder
-      - LIQUIBASE_DIR=$(ls -d liquibase-* | head -n 1)
+      # Create target dir
+      - mkdir -p /opt/liquibase
 
-      # Install
-      - mv "$LIQUIBASE_DIR" /opt/liquibase
+      # Move extracted files (all Liquibase files)
+      - mv liquibase lib sdk internal /opt/liquibase/
 
       # Make executable
       - chmod +x /opt/liquibase/liquibase
@@ -32,7 +34,7 @@ phases:
       # Install jq
       - yum install -y jq
 
-      # Verify
+      # Verify install
       - liquibase --version
 
 
@@ -40,7 +42,11 @@ phases:
     commands:
       - echo Fetching DB credentials
 
-      - SECRET=$(aws secretsmanager get-secret-value --region eu-north-1 --secret-id prod/appbeta/rds/mysql --query SecretString --output text)
+      - SECRET=$(aws secretsmanager get-secret-value \
+          --region eu-north-1 \
+          --secret-id prod/appbeta/rds/mysql \
+          --query SecretString \
+          --output text)
 
       - export DB_USER=$(echo "$SECRET" | jq -r .username)
       - export DB_PASS=$(echo "$SECRET" | jq -r .password)
