@@ -21,10 +21,10 @@ phases:
           --query SecretString \
           --output text)
 
-      - export DB_USER=$(echo $SECRET | jq -r .username)
-      - export DB_PASS=$(echo $SECRET | jq -r .password)
-      - export DB_HOST=$(echo $SECRET | jq -r .host)
-      - export DB_PORT=$(echo $SECRET | jq -r .port)
+      - export DB_USER=$(echo "$SECRET" | jq -r .username)
+      - export DB_PASS=$(echo "$SECRET" | jq -r .password)
+      - export DB_HOST=$(echo "$SECRET" | jq -r .host)
+      - export DB_PORT=$(echo "$SECRET" | jq -r .port)
 
       - echo "DB Host: $DB_HOST"
       - echo "DB Port: $DB_PORT"
@@ -35,7 +35,7 @@ phases:
       - |
         liquibase \
           --url="jdbc:postgresql://$DB_HOST:$DB_PORT/postgres" \
-          --username=$DB_USER \
-          --password=$DB_PASS \
+          --username="$DB_USER" \
+          --password="$DB_PASS" \
           --changeLogFile=db/changelog/db.changelog-master.xml \
           update
