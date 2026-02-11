@@ -5,7 +5,7 @@ phases:
     runtime-versions:
       java: corretto17
     commands:
-      - echo "Installing Liquibase..."
+      - echo Installing Liquibase
       - curl -L https://github.com/liquibase/liquibase/releases/download/v4.25.1/liquibase-4.25.1.tar.gz -o liquibase.tar.gz
       - tar -xzf liquibase.tar.gz
       - mv liquibase/liquibase /usr/local/bin/
@@ -14,29 +14,16 @@ phases:
 
   pre_build:
     commands:
-      - echo "Fetching DB credentials..."
-      - >
-        SECRET=$(aws secretsmanager get-secret-value \
-        --region eu-north-1 \
-        --secret-id prod/appbeta/rds/mysql \
-        --query SecretString \
-        --output text)
-
+      - echo Fetching DB credentials
+      - SECRET=$(aws secretsmanager get-secret-value --region eu-north-1 --secret-id prod/appbeta/rds/mysql --query SecretString --output text)
       - export DB_USER=$(echo "$SECRET" | jq -r .username)
       - export DB_PASS=$(echo "$SECRET" | jq -r .password)
       - export DB_HOST=$(echo "$SECRET" | jq -r .host)
       - export DB_PORT=$(echo "$SECRET" | jq -r .port)
-
-      - echo "DB Host: $DB_HOST"
-      - echo "DB Port: $DB_PORT"
+      - echo DB Host is $DB_HOST
+      - echo DB Port is $DB_PORT
 
   build:
     commands:
-      - echo "Running Liquibase..."
-      - |
-        liquibase \
-          --url="jdbc:postgresql://$DB_HOST:$DB_PORT/postgres" \
-          --username="$DB_USER" \
-          --password="$DB_PASS" \
-          --changeLogFile=db/changelog/db.changelog-master.xml \
-          update
+      - echo Running Liquibase
+      - liquibase --url="jdbc:postgresql://$DB_HOST:$DB_PORT/postgres" --username="$DB_USER" --password="$DB_PASS" --changeLogFile=db/changelog/db.changelog-master.xml update
