@@ -31,12 +31,13 @@ phases:
       - echo "DB Port: $DB_PORT"
 
   build:
-    commands:
-      - echo "Running Liquibase..."
-      - |
-        liquibase \
-          --url="jdbc:postgresql://$DB_HOST:$DB_PORT/postgres" \
-          --username="$DB_USER" \
-          --password="$DB_PASS" \
-          --changeLogFile=db/changelog/db.changelog-master.xml \
-          update
+  commands:
+    - echo "Running Liquibase..."
+    - |
+      liquibase \
+        --url="jdbc:postgresql://$DB_HOST:$DB_PORT/postgres" \
+        --username=$DB_USER \
+        --password=$DB_PASS \
+        --changeLogFile=db/changelog/db.changelog-master.xml \
+        update
+
