@@ -8,8 +8,8 @@ env:
     LIQUIBASE_USERNAME: ""     # e.g., liquibase_user
     LIQUIBASE_DEFAULT_SCHEMA_NAME: ""  # optional
     # For security, DO NOT put passwords in plaintext. Use PARAMETER_STORE/SECRETS_MANAGER instead.
-  parameter-store:
-    LIQUIBASE_PASSWORD: "/myapp/db/liquibase_password"  # example path in SSM Parameter Store
+  # parameter-store:
+  #   LIQUIBASE_PASSWORD: "/myapp/db/liquibase_password"  # example path in SSM Parameter Store
 
 phases:
   install:
