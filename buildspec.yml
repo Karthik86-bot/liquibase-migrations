@@ -1,44 +1,38 @@
 version: 0.2
 
+env:
+  variables:
+    # Set these in CodeBuild "Environment variables" or via Parameter Store/Secrets Manager
+    CHANGELOG_FILE: "liquibase/changelog/master.xml"
+    LIQUIBASE_URL: ""          # e.g., jdbc:postgresql://<host>:5432/<db>
+    LIQUIBASE_USERNAME: ""     # e.g., liquibase_user
+    LIQUIBASE_DEFAULT_SCHEMA_NAME: ""  # optional
+    # For security, DO NOT put passwords in plaintext. Use PARAMETER_STORE/SECRETS_MANAGER instead.
+  parameter-store:
+    LIQUIBASE_PASSWORD: "/myapp/db/liquibase_password"  # example path in SSM Parameter Store
+
 phases:
   install:
     runtime-versions:
       java: corretto17
-    commands:
-      - echo "Installing Liquibase"
-
-      # Cleanup
-      - rm -rf /opt/liquibase /tmp/liquibase liquibase.tar.gz
-
-      # Temp folder
-      - mkdir -p /tmp/liquibase
-      - cd /tmp/liquibase
-
-      # Download
-      - curl -L https://github.com/liquibase/liquibase/releases/download/v4.25.1/liquibase-4.25.1.tar.gz -o liquibase.tar.gz
-
-      # Extract
-      - tar -xzf liquibase.tar.gz
-
-      # Install
+    commands:      
+      - set -euo pipefail
+      - echo "Installing Prerequisites"
+      - |
+        if command -v dnf >/dev/null 2>&1; then
+          sudo dnf -y install unzip curl tar jq
+        else
+          sudo yum -y install unzip curl tar jq
+        fi
+      - curl -L -o https://github.com/liquibase/liquibase/releases/download/v4.25.1/liquibase-4.25.1.tar.gz -o liquibase.tar.gz
       - mkdir -p /opt/liquibase
-      - cp -r ./* /opt/liquibase/
-
-      # Permissions
-      - chmod +x /opt/liquibase/liquibase
-
-      # PATH
+      - tar -xzf liquibase.tar.gz -C /opt/liquibase --strip-components=1
       - ln -sf /opt/liquibase/liquibase /usr/local/bin/liquibase
-
-      # Back
-      - cd $CODEBUILD_SRC_DIR
-
-      # Tools
-      - yum install -y jq
-
+      - echo "==> Downloading PostgreSQL JDBC driver"
+      - export PG_JDBC_VERSION=42.7.3
+      - curl -L -o /opt/liquibase/lib/postgresql-${PG_JDBC_VERSION}.jar "https://jdbc.postgresql.org/download/postgresql-${PG_JDBC_VERSION}.jar"
       # Verify
       - liquibase --version
-
 
   pre_build:
     commands:
@@ -53,7 +47,8 @@ phases:
 
       - echo "DB Host is $DB_HOST"
       - echo "DB Port is $DB_PORT"
-
+      - echo "==> Java version:" && java -version
+      - echo "==> Working directory: $(pwd)"
 
   build:
     commands:
@@ -64,11 +59,10 @@ phases:
       - ls -R liquibase || true
       - ls -R liquibase/changelog || true
 
-      - liquibase --log-level=FINE --log-file=liquibase.log \
+      - liquibase --log-level=FINE \
         --url="jdbc:postgresql://database-1.cf8a8aiigobn.eu-north-1.rds.amazonaws.com:5432/postgres" \
         --username="postgres"\
         --password="x27!I!4gW31Vjhl" \
-        --changeLogFile=liquibase/changelog/master.xml \
+        --changeLogFile="liquibase/changelog/master.xml" \
         update
 
-      - cat liquibase.log || true
