@@ -18,12 +18,7 @@ phases:
     commands:      
       - set -euo pipefail
       - echo "Installing Prerequisites"
-      - |
-        if command -v dnf >/dev/null 2>&1; then
-          sudo dnf -y install unzip curl tar jq
-        else
-          sudo yum -y install unzip curl tar jq
-        fi
+      - yum install -y jq
       - curl -L -o https://github.com/liquibase/liquibase/releases/download/v4.25.1/liquibase-4.25.1.tar.gz -o liquibase.tar.gz
       - mkdir -p /opt/liquibase
       - tar -xzf liquibase.tar.gz -C /opt/liquibase --strip-components=1
