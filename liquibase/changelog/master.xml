@@ -6,7 +6,7 @@
       http://www.liquibase.org/xml/ns/dbchangelog
       http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.9.xsd">
 
-    <include file="V1__create_tables.sql"
+    <include file="V1__create_user_table.sql"
              relativeToChangelogFile="true"/>
 
     <include file="V2__add_email_column.sql"
