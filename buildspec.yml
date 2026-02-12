@@ -64,7 +64,7 @@ phases:
       - ls -R liquibase || true
       - ls -R liquibase/changelog || true
 
-      - liquibase --log-level=INFO --log-file=liquibase.log \
+      - liquibase --log-level=FINE --log-file=liquibase.log \
         --url="jdbc:postgresql://database-1.cf8a8aiigobn.eu-north-1.rds.amazonaws.com:5432/postgres" \
         --username="postgres"\
         --password="x27!I!4gW31Vjhl" \
