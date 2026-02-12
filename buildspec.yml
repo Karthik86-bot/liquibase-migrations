@@ -34,20 +34,20 @@ phases:
       # Verify
       - liquibase --version
 
-  pre_build:
-    commands:
-      - echo "Fetching DB credentials"
+  # pre_build:
+  #   commands:
+  #     - echo "Fetching DB credentials"
 
-      - SECRET=$(aws secretsmanager get-secret-value --region eu-north-1 --secret-id prod/appbeta/rds/mysql --query SecretString --output text)
+  #     - SECRET=$(aws secretsmanager get-secret-value --region eu-north-1 --secret-id prod/appbeta/rds/mysql --query SecretString --output text)
 
-      - export DB_USER=$(echo "$SECRET" | jq -r .username)
-      - export DB_PASS=$(echo "$SECRET" | jq -r .password)
-      - export DB_HOST=$(echo "$SECRET" | jq -r .host)
-      - export DB_PORT=$(echo "$SECRET" | jq -r .port)
+  #     - export DB_USER=$(echo "$SECRET" | jq -r .username)
+  #     - export DB_PASS=$(echo "$SECRET" | jq -r .password)
+  #     - export DB_HOST=$(echo "$SECRET" | jq -r .host)
+  #     - export DB_PORT=$(echo "$SECRET" | jq -r .port)
 
-      - echo "DB Host is $DB_HOST"
-      - echo "DB Port is $DB_PORT"
-      - echo "==> Working directory: $(pwd)"
+  #     - echo "DB Host is $DB_HOST"
+  #     - echo "DB Port is $DB_PORT"
+  #     - echo "==> Working directory: $(pwd)"
 
   build:
     commands:
@@ -65,3 +65,6 @@ phases:
         --changeLogFile="liquibase/changelog/master.xml" \
         update
 
+cache:
+  paths:
+    - '/opt/liquibase/**/*'
