@@ -49,18 +49,9 @@ phases:
   build:
     commands:
       - echo "Running Liquibase"
-
       - pwd
       - ls -R .
-      - ls -R liquibase || true
-      - ls -R liquibase/changelog || true
-
-      - liquibase --log-level=FINE \
-        --url="jdbc:postgresql://database-1.cf8a8aiigobn.eu-north-1.rds.amazonaws.com:5432/postgres" \
-        --username="postgres"\
-        --password="x27!I!4gW31Vjhl" \
-        --changeLogFile="liquibase/changelog/master.xml" \
-        update
+      - liquibase --log-level=FINE --url="jdbc:postgresql://database-1.cf8a8aiigobn.eu-north-1.rds.amazonaws.com:5432/postgres" --username="postgres" --password="x27!I!4gW31Vjhl" --changeLogFile="liquibase/changelog/master.xml" update
 
 cache:
   paths:
