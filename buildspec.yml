@@ -65,9 +65,9 @@ phases:
       - ls -R liquibase/changelog || true
 
       - liquibase --log-level=INFO --log-file=liquibase.log \
-        --url="jdbc:postgresql://$DB_HOST:$DB_PORT/postgres" \
-        --username="$DB_USER" \
-        --password="$DB_PASS" \
+        --url="jdbc:postgresql://database-1.cf8a8aiigobn.eu-north-1.rds.amazonaws.com:5432/postgres" \
+        --username="postgres"\
+        --password="x27!I!4gW31Vjhl" \
         --changeLogFile=liquibase/changelog/master.xml \
         update
 
