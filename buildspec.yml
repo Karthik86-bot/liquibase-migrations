@@ -47,7 +47,6 @@ phases:
 
       - echo "DB Host is $DB_HOST"
       - echo "DB Port is $DB_PORT"
-      - echo "==> Java version:" && java -version
       - echo "==> Working directory: $(pwd)"
 
   build:
