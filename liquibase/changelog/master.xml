@@ -9,7 +9,7 @@
     <include file="V1__create_tables.sql"
              relativeToChangelogFile="true"/>
 
-    <include file="V2__add_columns.sql"
+    <include file="V2__add_email_column.sql"
              relativeToChangelogFile="true"/>
 
 </databaseChangeLog>
